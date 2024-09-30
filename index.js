@@ -3,29 +3,18 @@ const mongoose = require('mongoose')
 const app = express()
 const productRoute = require('./routes/product.route')
 const loginRoute = require('./routes/sign.route')
+const ordeRoute = require('./routes/order.route')
 const cookieParser = require('cookie-parser')
+
 // middlewares
-app.use(express.json())
+app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({extended:false}))
 app.use(cookieParser())
 
 // routes
 app.use('/api',loginRoute)
-
 app.use("/api/products",productRoute)
-
-// app.get('/set-cookies',(req,res)=>{
-//     // res.setHeader('Set-Cookie','newUser=true')
-//     res.cookie('newUser',false)
-//     res.send('Got the Cookies?')
-// })
-
-// app.get('/read-cookies',(req,res)=>{
-//     // res.setHeader('Set-Cookie','newUser=true')
-//     res.send(req.cookies)
-// })
-
-
+app.use("/api/order",ordeRoute)
 
 
 

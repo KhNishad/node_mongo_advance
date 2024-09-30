@@ -11,12 +11,12 @@ const requireAuth  = (req,res,next)=>{
             res.redirect('/login')
             console.log('..eror',err);
         }else{
-            console.log('............login');
+            console.log('............login',token);
             next()
         }
       })
     }else{
-        next()
+      res.status(401).json({ message: 'Login First' })
         console.log('............not login');
 
     }
