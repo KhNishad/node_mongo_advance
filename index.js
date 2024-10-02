@@ -4,6 +4,8 @@ const app = express()
 const productRoute = require('./routes/product.route')
 const loginRoute = require('./routes/sign.route')
 const ordeRoute = require('./routes/order.route')
+const categoryRoute = require('./routes/category.route')
+
 const cookieParser = require('cookie-parser')
 
 // middlewares
@@ -15,6 +17,8 @@ app.use(cookieParser())
 app.use('/api',loginRoute)
 app.use("/api/products",productRoute)
 app.use("/api/order",ordeRoute)
+app.use("/api/category",categoryRoute)
+
 
 
 
