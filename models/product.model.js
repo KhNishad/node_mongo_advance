@@ -18,6 +18,13 @@ const ProductSchema = mongoose.Schema(
             type: String,
             required: [true, "Image is Required"]
         },
+        category: {
+            type: String,
+            required: [true, "Category is Required"]
+        },
+        SubCategory: {
+            type: String,
+        },
         
     },
     {
