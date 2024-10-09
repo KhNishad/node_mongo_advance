@@ -119,7 +119,9 @@ const subCategoryList = async (req, res) => {
                 $project: {
                     _id: 1,
                     name: 1,
-                    subCategoryList: 1                       // Include the complete subcategory list with sub-subcategories
+                    isParent:1,
+                    parentCategoryInfo:1,
+                    subSubCategories: 1                      
                 }
             }
         ])

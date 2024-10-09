@@ -1,3 +1,4 @@
+const { type } = require('express/lib/response')
 const mongoose = require('mongoose')
 
 const ProductSchema = mongoose.Schema(
@@ -5,6 +6,10 @@ const ProductSchema = mongoose.Schema(
         name: {
             type: String,
             required: [true, "Product Name is Required"]
+        },
+        sku:{
+            type: String,
+            required:true
         },
         price: {
             type: Number,
@@ -19,18 +24,26 @@ const ProductSchema = mongoose.Schema(
             required: [true, "Image is Required"]
         },
         category: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'category',
             required: [true, "Category is Required"]
         },
-        SubCategory: {
-            type: String,
+        subCategory: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'subCategory',
+            default: null
         },
-        
+        subSubCategory: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'subSubCategory',
+            default: null
+        },
+
     },
     {
-        timestamps:true
+        timestamps: true
     }
 )
 
-const Product = mongoose.model("Product",ProductSchema)
+const Product = mongoose.model("Product", ProductSchema)
 module.exports = Product

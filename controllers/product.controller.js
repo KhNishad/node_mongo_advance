@@ -1,4 +1,5 @@
 const Product = require('../models/product.model')
+// const {productSku} = require('../helpers/helperFunctions')
 const path = require('path');
 const fs = require('fs')
 
@@ -6,6 +7,29 @@ function generateDynamicName(baseName) {
     const timestamp = Date.now(); // Get current timestamp in milliseconds
     return `${baseName}_${timestamp}`;
 }
+
+const productSku = async () => {
+    const lastProduct =
+      (await Product.findOne({}, { sku: 1 }).sort({ createdAt: -1 }))?.sku ?? "0";
+  
+    let lastProductSerial;
+    if (lastProduct !== "0") {
+      lastProductSerial = Number(lastProduct.split("TEST")[1]);
+    } else {
+      lastProductSerial = 0;
+    }
+  
+    let getSerialId;
+    if (lastProductSerial < 1000) {
+      getSerialId = String(lastProductSerial + 1);
+      while (getSerialId.length < 4) getSerialId = `0${getSerialId}`;
+      getSerialId = `TEST${getSerialId}`;
+    } else {
+      getSerialId = `TEST${lastProductSerial + 1}`;
+    }
+  
+    return getSerialId;
+  };
 
 // create product
 const createProduct =  async (req,res)=>{
@@ -28,6 +52,7 @@ const createProduct =  async (req,res)=>{
     
     try {
         req.body.image = imagePath
+        req.body.sku = await productSku()
         const product = await Product.create(req.body)
         res.status(200).json(product)
     } catch (error) {
@@ -40,7 +65,7 @@ const createProduct =  async (req,res)=>{
 const getAllProducts =  async (req,res)=>{
   
     try {
-        const products = await Product.find({})
+        const products = await Product.find({}).populate('category').populate('subCategory').populate('subSubCategory')
         res.status(200).json(products)
     } catch (error) {
         res.status(500).json({message:error.message})
