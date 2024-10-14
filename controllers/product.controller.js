@@ -1,4 +1,7 @@
 const Product = require('../models/product.model')
+const Category = require('../models/category.model')
+const SubCategory = require('../models/subCategory.model')
+const SubSubCategory = require('../models/subSubCategory.model')
 // const {productSku} = require('../helpers/helperFunctions')
 const path = require('path');
 const fs = require('fs')
@@ -33,10 +36,31 @@ const productSku = async () => {
 
 // create product
 const createProduct =  async (req,res)=>{
-    const { image } = req.body;
+    const { image,category,subCategory,subSubCategory } = req.body;
 
     if (!image) {
         return res.status(400).json({ error: 'Image data or name missing!' });
+    }
+
+    let isValidCategory = await Category.findById(category)
+    let isValidSubCategory;
+    let isValidSubSubCategory;
+
+
+    if(subCategory){
+         isValidSubCategory = await SubCategory.findById(subCategory)
+    }
+    if(subSubCategory){
+        isValidSubSubCategory = await SubSubCategory.findById(subCategory)
+    }
+    if(!isValidCategory){
+        return res.status(400).json({error:'Not a valid Category',status:400,success:false})
+    }
+    if(subCategory && !isValidSubCategory){
+        return res.status(400).json({error:'Not a valid Sub Category',status:400,success:false})
+    }
+    if(subSubCategory && !isValidSubSubCategory){
+        return res.status(400).json({error:'Not a valid sub Sub Category',status:400,success:false})
     }
     
     const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
