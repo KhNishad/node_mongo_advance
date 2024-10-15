@@ -42,17 +42,15 @@ const createProduct =  async (req,res)=>{
         return res.status(400).json({ error: 'Image data or name missing!' });
     }
 
-    let isValidCategory = await Category.findById(category)
-    let isValidSubCategory;
-    let isValidSubSubCategory;
+    const validationResults = await Promise.all([
+        Category.findById(category),
+        subCategory ? SubCategory.findById(subCategory) : null,
+        subSubCategory ? SubSubCategory.findById(subSubCategory) : null,
+    ]);
+
+    const [isValidCategory, isValidSubCategory, isValidSubSubCategory] = validationResults;
 
 
-    if(subCategory){
-         isValidSubCategory = await SubCategory.findById(subCategory)
-    }
-    if(subSubCategory){
-        isValidSubSubCategory = await SubSubCategory.findById(subCategory)
-    }
     if(!isValidCategory){
         return res.status(400).json({error:'Not a valid Category',status:400,success:false})
     }
