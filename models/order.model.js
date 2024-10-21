@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 // Define Order Schema
 const orderSchema = new mongoose.Schema({
-    customer: {
-        name: { type: String, required: true },
-        phone: { type: String, required: true },
-        address: {  type: String, required: true },
-    },
+    // customer: {
+    //     name: { type: String, required: true },
+    //     phone: { type: String, required: true },
+    //     address: {  type: String, required: true },
+    // },
     products: [
         {
             productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
@@ -14,6 +14,7 @@ const orderSchema = new mongoose.Schema({
             quantity: { type: Number, required: true, default: 1 }
         }
     ],
+    customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'customer', required: true },
     totalAmount: { type: Number, required: true },
     orderStatus: { type: String, default: 'Pending' },  // e.g., Pending, Shipped, Delivered
     createdAt: { type: Date, default: Date.now }
