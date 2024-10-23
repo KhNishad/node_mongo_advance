@@ -67,7 +67,54 @@ const createOrder = async (req, res) => {
 const getallOrder = async (req, res) => {
 
     try {
-        let orders = await Order.find({}).populate('customerId').populate('products.productId')
+        let orders = await Order.aggregate([
+            {
+                $lookup: {
+                    from: 'customers', // The collection containing customer data
+                    localField: 'customerId', // The field in the Order collection to match
+                    foreignField: '_id', // The field in the Customer collection to match
+                    as: 'customerInfo' // The name of the field to store the joined customer data
+                }
+            },
+            {
+                $unwind: '$products' // Unwind the products array so we can join on each productId
+            },
+            {
+                $lookup: {
+                    from: 'products', // The collection containing customer data
+                    localField: 'products.productId', // The field in the Order collection to match
+                    foreignField: '_id', // The field in the Customer collection to match
+                    as: 'productInfo' // The name of the field to store the joined customer data
+                }
+            },
+            {
+                $project: {
+                    customerId:0
+                }
+            },
+           
+            {
+                $group: {
+                  _id: '$_id', // Group by order _id
+                  products: {
+                    $push: {
+                      price: '$products.price',
+                      quantity: '$products.quantity',
+                      productInfo: { 
+                        name: { $first: '$productInfo.name' },  // Use $first to get single value
+                        price: { $first: '$productInfo.price' },
+                        sku: { $first: '$productInfo.sku' }
+                      }
+                    }
+                  },
+                  customerInfo: { $first: '$customerInfo' }, // Take the first customerInfo
+                  totalAmount: { $first: '$totalAmount' }, // Keep the totalAmount field
+                  orderStatus: { $first: '$orderStatus' }, // Keep the orderStatus field
+                  createdAt: { $first: '$createdAt' } // Keep the createdAt field
+                }
+              }
+
+        ]);
 
         res.status(200).json(orders)
     } catch (error) {
@@ -106,7 +153,7 @@ const getSingleOrderView = async (req, res) => {
             .exec();
 
         if (order) {
-           
+
             res.status(200).json({
                 data: order,
                 message: 'Single Order View',
