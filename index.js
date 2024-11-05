@@ -5,6 +5,7 @@ const productRoute = require('./routes/product.route')
 const loginRoute = require('./routes/sign.route')
 const ordeRoute = require('./routes/order.route')
 const categoryRoute = require('./routes/category.route')
+const brandRoute = require('./routes/brand.route')
 
 const cookieParser = require('cookie-parser')
 
@@ -18,6 +19,8 @@ app.use('/api',loginRoute)
 app.use("/api/products",productRoute)
 app.use("/api/order",ordeRoute)
 app.use("/api/category",categoryRoute)
+app.use("/api/brand",brandRoute)
+
 
 
 
