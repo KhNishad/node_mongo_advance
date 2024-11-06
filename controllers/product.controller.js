@@ -2,7 +2,7 @@ const Product = require('../models/product.model')
 const Category = require('../models/category.model')
 const SubCategory = require('../models/subCategory.model')
 const SubSubCategory = require('../models/subSubCategory.model')
-const {productSku} = require('../helpers/helperFunctions')
+const { productSku } = require('../helpers/helperFunctions')
 const path = require('path');
 const fs = require('fs')
 
@@ -61,18 +61,22 @@ const createProduct = async (req, res) => {
     }
 }
 
-
 // get all products
 const getAllProducts = async (req, res) => {
 
     try {
-        const products = await Product.find({}).populate('category').populate('subCategory').populate('subSubCategory')
+        const products = await Product.find({}).populate({
+            path: 'category',
+            select: 'name isParent'
+        }).populate({path:'subCategory',select:'name isParent'}).populate({path:'subSubCategory',select:'name isParent'}).populate({
+            path: 'brand',
+            select: 'name slug'
+        })
         res.status(200).json(products)
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
 }
-
 
 // get single product
 const getSingleProduct = async (req, res) => {
@@ -90,7 +94,7 @@ const getSingleProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
 
     const { id } = req.params
-    const {image, subCategory, subSubCategory ,category} = req.body
+    const { image, subCategory, subSubCategory, category } = req.body
 
 
     if (!image) {

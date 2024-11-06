@@ -7,9 +7,9 @@ const ProductSchema = mongoose.Schema(
             type: String,
             required: [true, "Product Name is Required"]
         },
-        sku:{
+        sku: {
             type: String,
-            required:true
+            required: true
         },
         price: {
             type: Number,
@@ -22,6 +22,10 @@ const ProductSchema = mongoose.Schema(
         image: {
             type: String,
             required: [true, "Image is Required"]
+        },
+        brand: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'brand',
         },
         category: {
             type: mongoose.Schema.Types.ObjectId,
