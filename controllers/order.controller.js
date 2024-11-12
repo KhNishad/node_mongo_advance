@@ -1,5 +1,6 @@
 const Order = require('../models/order.model')
 const Customer = require('../models/customer.model')
+const Product = require('../models/product.model')
 const mongoose = require('mongoose');
 
 
@@ -47,19 +48,26 @@ const createOrder = async (req, res) => {
         // Create the order
         const order = await Order.create([orderData], { session });
 
+        // update order count
+        await Promise.all(
+            req.body.products.map(item =>
+                Product.updateOne(
+                    { _id: item?.productId },
+                    { $inc: { orderCount: item?.quantity } },
+                    { session }
+                )
+            )
+        );
+
         // Commit transaction
         await session.commitTransaction();
         session.endSession();
-
-        return res.status(201).json(order);
+        return res.status(201).json({ data: order, success: true, message: "Order Created Success" });
 
     } catch (error) {
-        // Rollback in case of error
         await session.abortTransaction();
         session.endSession();
-
-        console.error('Order creation failed:', error);
-        return res.status(500).json({ message: error.message });
+        return res.status(500).json({ data:null,success:false,message: error.message });
     }
 
 }
@@ -89,30 +97,39 @@ const getallOrder = async (req, res) => {
             },
             {
                 $project: {
-                    customerId:0
+                    customerId: 0
                 }
             },
-           
+
             {
                 $group: {
-                  _id: '$_id', // Group by order _id
-                  products: {
-                    $push: {
-                      price: '$products.price',
-                      quantity: '$products.quantity',
-                      productInfo: { 
-                        name: { $first: '$productInfo.name' },  // Use $first to get single value
-                        price: { $first: '$productInfo.price' },
-                        sku: { $first: '$productInfo.sku' }
-                      }
-                    }
-                  },
-                  customerInfo: { $first: '$customerInfo' }, // Take the first customerInfo
-                  totalAmount: { $first: '$totalAmount' }, // Keep the totalAmount field
-                  orderStatus: { $first: '$orderStatus' }, // Keep the orderStatus field
-                  createdAt: { $first: '$createdAt' } // Keep the createdAt field
+                    _id: '$_id', // Group by order _id
+                    products: {
+                        $push: {
+                            price: '$products.price',
+                            quantity: '$products.quantity',
+                            productInfo: {
+                                name: { $first: '$productInfo.name' },  // Use $first to get single value
+                                price: { $first: '$productInfo.price' },
+                                sku: { $first: '$productInfo.sku' },
+                                slug: { $first: '$productInfo.slug' }
+                            }
+                        }
+                    },
+                    customerInfo: { $first: '$customerInfo' }, // Take the first customerInfo
+                    totalAmount: { $first: '$totalAmount' }, // Keep the totalAmount field
+                    orderStatus: { $first: '$orderStatus' }, // Keep the orderStatus field
+                    createdAt: { $first: '$createdAt' } // Keep the createdAt field
                 }
-              }
+            },
+            {
+                $project: {
+                    // Exclude fields within customerInfo
+                    'customerInfo.updatedAt': 0,
+                    'customerInfo.createdAt': 0,
+                    'customerInfo.__v': 0,
+                }
+            }
 
         ]);
 

@@ -6,7 +6,7 @@ const {createProduct,deleteProudct,getAllProducts,getSingleProduct,updateProduct
 router.post('/',requireAuth,createProduct)
 router.put('/:id',requireAuth,updateProduct)
 router.get('/all',getAllProducts)
-router.get('/:id',requireAuth,getSingleProduct)
+router.get('/view-single/:id',requireAuth,getSingleProduct)
 router.delete('/:id',requireAuth,deleteProudct)
 
 

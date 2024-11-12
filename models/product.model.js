@@ -5,20 +5,31 @@ const ProductSchema = mongoose.Schema(
     {
         name: {
             type: String,
-            required: [true, "Product Name is Required"]
+            required: [true, "Product Name is Required"],
+            index:true
         },
         sku: {
             type: String,
-            required: true
+            required: true,
+            index:true
+        },
+        slug: {
+            type: String,
+            required: true,
+            index:true
         },
         price: {
             type: Number,
             required: [true, "Price is Required"]
         },
-        qty: {
+        stock: {
             type: Number,
             required: [true, "Qty is Required"]
         },
+        orderCount: {
+            type: Number,
+            default: 0
+          },
         image: {
             type: String,
             required: [true, "Image is Required"]
